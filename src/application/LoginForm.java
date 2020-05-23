@@ -15,7 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-public class RegistrationForm extends Application {
+public class LoginForm extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -67,7 +67,7 @@ public class RegistrationForm extends Application {
 
     private void addUIControls(GridPane gridPane) {
         // Add Header
-        Label headerLabel = new Label("Registration Form");
+        Label headerLabel = new Label("Log in Form");
         headerLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         gridPane.add(headerLabel, 0,0,2,1);
         GridPane.setHalignment(headerLabel, HPos.CENTER);
@@ -81,65 +81,20 @@ public class RegistrationForm extends Application {
         TextField usernameField = new TextField();
         usernameField.setPrefHeight(40);
         gridPane.add(usernameField, 1,1);
-        
-        // Add Card Number Label
-        Label CardNumberLabel = new Label("Card Number : ");
-        gridPane.add(CardNumberLabel, 0,2);
-
-        // Add Card Number Field
-        TextField CardNumberField = new TextField();
-        CardNumberField.setPrefHeight(40);
-        gridPane.add(CardNumberField, 1,2);
-        
-        // Add Expiration Date Label
-        Label ExpirationDateLabel = new Label("Expiration Date : ");
-        gridPane.add(ExpirationDateLabel, 0,3);
-
-        // Add Expiration Date Field
-        TextField ExpirationDateField = new TextField();
-        ExpirationDateField.setPrefHeight(40);
-        gridPane.add(ExpirationDateField, 1,3);
-        
-        // Add Card Name Label
-        Label CardNameLabel = new Label("Card Name : ");
-        gridPane.add(CardNameLabel, 0,4);
-
-        // Add Card Number Field
-        TextField CardNameField = new TextField();
-        CardNameField.setPrefHeight(40);
-        gridPane.add(CardNameField, 1,4);
-        
-        // Add CVV/CVC Label
-        Label CvvCvcLabel = new Label("CVV/CVC : ");
-        gridPane.add(CvvCvcLabel, 0,5);
-
-        // Add CVV/CVC Field
-        TextField CvvCvcField = new TextField();
-        CvvCvcField.setPrefHeight(40);
-        gridPane.add(CvvCvcField, 1,5);
 
         // Add Password Label
         Label passwordLabel = new Label("Password : ");
-        gridPane.add(passwordLabel, 0, 6);
+        gridPane.add(passwordLabel, 0, 2);
 
         // Add Password Field
         PasswordField passwordField = new PasswordField();
         passwordField.setPrefHeight(40);
-        gridPane.add(passwordField, 1, 6);
-        
-     // Add Password2 Label
-        Label passwordLabel2 = new Label("Password again : ");
-        gridPane.add(passwordLabel2, 0, 7);
-
-        // Add Password2 Field
-        PasswordField passwordField2 = new PasswordField();
-        passwordField2.setPrefHeight(40);
-        gridPane.add(passwordField2, 1, 7);
+        gridPane.add(passwordField, 1, 2);
         
         // Add RadioBox Label
         
         Label customerOrArtistLabel = new Label("User type:");
-        gridPane.add(customerOrArtistLabel, 0,8);
+        gridPane.add(customerOrArtistLabel, 0,3);
         
         
         // Add RadioBox Field
@@ -147,13 +102,13 @@ public class RegistrationForm extends Application {
                 
         RadioButton customerRadiobox = new RadioButton("Customer");
         HBox hbox = new HBox(customerRadiobox);
-        gridPane.add(customerRadiobox, 1, 8);
+        gridPane.add(customerRadiobox, 1, 3);
         customerRadiobox.setToggleGroup(group);
         customerRadiobox.setSelected(true);
         
         RadioButton artistRadiobox = new RadioButton("Artist");
         HBox hbox2 = new HBox(artistRadiobox);
-        gridPane.add(artistRadiobox, 1, 9);
+        gridPane.add(artistRadiobox, 1, 4);
         artistRadiobox.setToggleGroup(group);
         
         // Add Submit Button
@@ -161,7 +116,7 @@ public class RegistrationForm extends Application {
         submitButton.setPrefHeight(40);
         submitButton.setDefaultButton(true);
         submitButton.setPrefWidth(100);
-        gridPane.add(submitButton, 0, 10, 2, 1);
+        gridPane.add(submitButton, 0, 5, 2, 1);
         GridPane.setHalignment(submitButton, HPos.CENTER);
         GridPane.setMargin(submitButton, new Insets(20, 0,20,0));
 
@@ -172,32 +127,8 @@ public class RegistrationForm extends Application {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter your username");
                     return;
                 }
-                if(CardNumberField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter your card number");
-                    return;
-                }
-                if(ExpirationDateField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter the expiration date of the card");
-                    return;
-                }
-                if(CardNameField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter the card name");
-                    return;
-                }
-                if(CvvCvcField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter the CVV/CVC");
-                    return;
-                }
                 if(passwordField.getText().isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a password");
-                    return;
-                }
-                if(passwordField2.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter the password again");
-                    return;
-                }
-                if(passwordField2.getText().equals(passwordField.getText())==false) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "The passwords don't match");
                     return;
                 }
                 showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Registration Successful!", "Welcome " + usernameField.getText());

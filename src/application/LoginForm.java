@@ -1,5 +1,13 @@
 package application;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import javafx.application.Application;
 import javafx.scene.layout.HBox;
 import javafx.event.ActionEvent;
@@ -17,6 +25,46 @@ import javafx.stage.Window;
 
 public class LoginForm extends Application {
 
+	/// remember the user type
+	public static String globalType;
+	/// checks for username and password match
+	public static boolean match = false;
+
+	public static void userMatch(String usr, String pass) {
+		
+		JSONParser parser = new JSONParser();
+		
+	try(FileReader reader = new FileReader("kfc.json"))
+	{
+		// read
+		Object obj = parser.parse(reader);
+		JSONArray userList = (JSONArray) obj;
+		// iterate
+		userList.forEach(user -> parseUserObject((JSONObject)user, usr, pass));
+		
+	}	
+			
+		catch(FileNotFoundException e) {e.printStackTrace();}
+		catch(IOException e) {e.printStackTrace();}
+		catch(Exception e) {e.printStackTrace();}
+	}
+
+	private static void parseUserObject(JSONObject user, String usr, String pass)
+	{
+		JSONObject userObj = (JSONObject) user.get("user");
+		/// get username, password, user type
+		String readUser = (String) userObj.get("username");
+		String readPass = (String) userObj.get("password");
+		String readType = (String) userObj.get("type");
+		
+		if(usr.equals(readUser)) {
+			if(pass.equals(readPass)) {
+				match = true;
+				globalType = readType;
+			}
+			return;
+		}
+	}
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Danca Music Shop");
@@ -131,7 +179,12 @@ public class LoginForm extends Application {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a password");
                     return;
                 }
-                showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Registration Successful!", "Welcome " + usernameField.getText());
+                userMatch(usernameField.getText(), passwordField.getText());
+                if(match == false) {
+                	showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Database Error!", "Username and Password don't match");
+                	return;
+                }
+                showAlert(Alert.AlertType.INFORMATION, gridPane.getScene().getWindow(), "Registration Successful!", "Welcome " + usernameField.getText());
             }
         });
     }
@@ -144,8 +197,14 @@ public class LoginForm extends Application {
         alert.initOwner(owner);
         alert.show();
     }
+    
+    public static void launchLogin(String[] args)
+    {
+    	launch(args);
+    }
 
     public static void main(String[] args) {
-        launch(args);
+        launchLogin(args);
+        
     }
 }

@@ -15,7 +15,98 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.text.ParseException;
+import java.io.FileReader;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+
 public class RegistrationForm extends Application {
+
+
+	/// insert users in the data base
+public static void insertUser(String username, String password, String type) {
+		
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+		
+		try(Reader reader = new FileReader("kfc.json"))
+		{
+			jsonArray = (JSONArray) parser.parse(reader);
+					
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		}
+		
+		JSONObject obj = new JSONObject();
+		obj.put("username", username);
+		obj.put("password", password);
+		obj.put("type", type);
+		
+		JSONObject user = new JSONObject();
+		user.put("user", obj);
+		
+		jsonArray.add(user);
+		
+		try(FileWriter file = new FileWriter("kfc.json"))
+		{
+			file.write(jsonArray.toJSONString());
+			file.flush();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		System.out.println(obj);
+		
+	}
+	
+	/// checks for username availability
+
+public static boolean found = false;
+
+public static void foundUser(String usr) {
+	
+	JSONParser parser = new JSONParser();
+	
+try(FileReader reader = new FileReader("kfc.json"))
+{
+	// read
+	Object obj = parser.parse(reader);
+	JSONArray userList = (JSONArray) obj;
+	// iterate
+	userList.forEach(user -> parseUserObject((JSONObject)user, usr));
+	
+}	
+		
+	catch(FileNotFoundException e) {e.printStackTrace();}
+	catch(IOException e) {e.printStackTrace();}
+	catch(Exception e) {e.printStackTrace();}
+}
+
+private static void parseUserObject(JSONObject user, String usr)
+{
+	JSONObject userObj = (JSONObject) user.get("user");
+	/// get username
+	String readUser = (String) userObj.get("username");
+	
+	if(usr.equals(readUser)) {
+		found = true;
+		return;
+	}
+}
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -81,6 +172,8 @@ public class RegistrationForm extends Application {
         TextField usernameField = new TextField();
         usernameField.setPrefHeight(40);
         gridPane.add(usernameField, 1,1);
+       
+        /* Card details
         
         // Add Card Number Label
         Label CardNumberLabel = new Label("Card Number : ");
@@ -117,7 +210,7 @@ public class RegistrationForm extends Application {
         TextField CvvCvcField = new TextField();
         CvvCvcField.setPrefHeight(40);
         gridPane.add(CvvCvcField, 1,5);
-
+*/
         // Add Password Label
         Label passwordLabel = new Label("Password : ");
         gridPane.add(passwordLabel, 0, 6);
@@ -145,13 +238,13 @@ public class RegistrationForm extends Application {
         // Add RadioBox Field
         final ToggleGroup group = new ToggleGroup();
                 
-        RadioButton customerRadiobox = new RadioButton("Customer");
+        RadioButton customerRadiobox = new RadioButton("customer");
         HBox hbox = new HBox(customerRadiobox);
         gridPane.add(customerRadiobox, 1, 8);
         customerRadiobox.setToggleGroup(group);
         customerRadiobox.setSelected(true);
         
-        RadioButton artistRadiobox = new RadioButton("Artist");
+        RadioButton artistRadiobox = new RadioButton("artist");
         HBox hbox2 = new HBox(artistRadiobox);
         gridPane.add(artistRadiobox, 1, 9);
         artistRadiobox.setToggleGroup(group);
@@ -172,6 +265,8 @@ public class RegistrationForm extends Application {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter your username");
                     return;
                 }
+                /* Card details
+                
                 if(CardNumberField.getText().isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter your card number");
                     return;
@@ -188,6 +283,7 @@ public class RegistrationForm extends Application {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter the CVV/CVC");
                     return;
                 }
+                */
                 if(passwordField.getText().isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a password");
                     return;
@@ -199,8 +295,22 @@ public class RegistrationForm extends Application {
                 if(passwordField2.getText().equals(passwordField.getText())==false) {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "The passwords don't match");
                     return;
+                }    
+                /// check for username in the database  
+                foundUser(usernameField.getText());
+                if(found == true) {
+                	showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Username not available");
+                	return;
                 }
-                showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Registration Successful!", "Welcome " + usernameField.getText());
+                
+                /// insert users to database
+                if(customerRadiobox.isSelected() == true)
+                	insertUser(usernameField.getText(), passwordField2.getText(), "customer");
+                else
+                	insertUser(usernameField.getText(), passwordField2.getText(), "artist");
+                
+                showAlert(Alert.AlertType.INFORMATION, gridPane.getScene().getWindow(), "Registration Successful!", "Welcome " + usernameField.getText());
+               
             }
         });
     }
@@ -213,8 +323,12 @@ public class RegistrationForm extends Application {
         alert.initOwner(owner);
         alert.show();
     }
-
+    
+    	public static void launchRegister(String []args) {
+    		launch(args);
+    	}
+    
     public static void main(String[] args) {
-        launch(args);
+        launchRegister(args);
     }
 }
